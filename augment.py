@@ -13,7 +13,7 @@ class AugmentModel(nn.Module):
 
     def forward(self, input):
         model_out = self.model(input)
-        neuron_out = self.scale * torch.exp(self.linear(input))
+        neuron_out = self.scale * torch.exp(self.linear(input.view(input.size(0), -1)))
         return model_out + neuron_out
 
 
