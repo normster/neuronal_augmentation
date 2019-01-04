@@ -5,27 +5,27 @@ import torch.nn as nn
 class AugmentModel(nn.Module):
 
     def __init__(self, model, input_dim, output_dim):
-        super(AugmentedModel, self).__init__()
+        super(AugmentModel, self).__init__()
         self.model = model
-        self.scale = torch.randn(output_dim)
-        self.bias = torch.randn(ouptut_dim)
-        self.weight = torch.randn((output_dim, input_dim)) 
+        self.scale = nn.Parameter(torch.ones(output_dim))
+        self.linear = nn.Linear(input_dim, output_dim)
 
 
     def forward(self, input):
         model_out = self.model(input)
-        neuron_out = self.scale * torch.exp(input.matmul(self.weight.t()) + self.bias)
-
+        neuron_out = self.scale * torch.exp(self.linear(input))
         return model_out + neuron_out
 
 
 class AugmentLoss(nn.Module):
 
-    def __init__(self, loss, lambda=0.1):
-        assert lambda > 0, "Lambda in augmented loss must be non-negative"
+    def __init__(self, loss, l=0.1):
+        super(AugmentLoss, self).__init__()
+        assert l > 0, "Lambda in augmented loss must be non-negative"
         self.loss = loss
-        self.lambda = lambda
+        self.l = l
+
 
     def forward(self, input, target, a):
-        return self.loss(input, target) + self.lambda * torch.norm(a)
+        return self.loss(input, target) + self.l * torch.norm(a)
 
