@@ -19,14 +19,14 @@ class AugmentModel(nn.Module):
 
 class AugmentLoss(nn.Module):
 
-    def __init__(self, loss, model, l=0.1):
+    def __init__(self, loss, scale, l=0.1):
         super(AugmentLoss, self).__init__()
         assert l > 0, "Lambda in augmented loss must be non-negative"
         self.loss = loss
-        self.model = model
+        self.scale = scale
         self.l = l
 
 
     def forward(self, input, target):
-        return self.loss(input, target) + self.l * torch.norm(self.model.scale.data)
+        return self.loss(input, target) + self.l * torch.norm(self.scale)
 
